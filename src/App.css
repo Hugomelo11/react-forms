@@ -70,3 +70,7 @@ button {
   border-radius: 8px;
   cursor: pointer;
 }
+
+button:active {
+  background: blue;
+}

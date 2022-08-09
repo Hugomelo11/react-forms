@@ -1,20 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [validForm, setValidForm] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [title, setTitle] = useState("This is the title");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("Your description");
   const [author, setAuthor] = useState("Todd Albert");
+
+
+  useEffect(() => {
+    // fetch stuff
+    if ( title.length > 3 && description.length > 10) {
+      setValidForm(true)
+    } else {
+      setValidForm(false);
+    }
+  }, [title, description, author])
 
   // console.log(title)'
 
   // const formSubmit = async (e) => {}
 
   async function formSubmit(e) {
+    e.preventDefault();
+
+    if (!validForm) {
+      setErrorMsg("Not a valid form")
+      return
+    } 
+
     try {
-      e.preventDefault();
       // console.log("form submitted")
 
       // const comment = {
@@ -41,8 +58,16 @@ function App() {
       console.log(results);
       const data = await results.json();
       console.log(data);
+
+      setFormSubmitted(true);
+      setErrorMsg("")
+      setValidForm(true)
+      alert("Wow! submitted")
+
+
     } catch (error) {
       console.error(error);
+      setErrorMsg("There was an error submitting your comment" + error.toString())
     }
   }
 
@@ -55,6 +80,7 @@ function App() {
         <label>Title</label>
         <input
           type="text"
+          // requireds
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
@@ -66,6 +92,7 @@ function App() {
         <label>Description</label>
         <textarea
           value={description}
+          required
           onChange={(e) => {
             setDescription(e.target.value);
           }}
@@ -89,7 +116,13 @@ function App() {
           <option value="Other">Other</option>
         </select>
         <h3>{author}</h3>
+          {!formSubmitted &&
         <button>Submit Form</button>
+          }
+
+        {errorMsg &&
+            <h1>There was an error:<br/>{errorMsg}</h1>
+        }
       </form>
     </div>
   );
